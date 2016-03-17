@@ -1,0 +1,32 @@
+network-manager-applet:
+        merge:
+                - gnome-git
+network-manager-libreswan:
+        merge:
+                - gnome-git
+network-manager-fortisslvpn:
+        merge:
+                - gnome-git
+network-manager-vpnc:
+        merge:
+                - gnome-git
+network-manager-openvpn:
+        merge:
+                - gnome-git
+network-manager-pptp:
+        merge:
+                - gnome-git
+NetworkManager:
+        merge:
+                - freedesktop-git
+libndp:
+        owner: jpirko
+        merge:
+                - github-git
+libteam:
+        owner: jpirko
+        merge:
+                - github-git
+libreswan:
+        merge:
+                - github-git

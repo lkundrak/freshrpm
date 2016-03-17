@@ -1,0 +1,28 @@
+gnome-git:
+        cgit_base: gnome_cgit
+        git_web: cgit_web
+        git_commit: cgit_commit
+        tarball: cgit_tarball
+
+freedesktop-git:
+        cgit_base: freedesktop_cgit
+        git_web: cgit_web
+        git_commit: cgit_commit
+        tarball: cgit_tarball
+
+github-git:
+        git_web: github_web
+        git_commit: github_commit
+        tarball: github_tarball
+
+fedora-rpm:
+        spec_url: fedora_spec
+
+fedora-rpm-nm:
+        merge:
+                - fedora-rpm
+        rpm_name: nm_vpn_rpm
+
+default:
+        merge:
+                - fedora-rpm-nm

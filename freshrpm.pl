@@ -165,6 +165,8 @@ $spec =~ s/^(%build)/$1\nautoreconf -i -f/m
 	if $p->{autoreconf} // ($spec =~ /%configure/ and not $spec =~ /^auto(gen|(re)?conf)/);
 $spec =~ s/^(%build)/$1\ngtkdocize/m
 	if $p->{gtkdocize} // ($spec =~ /gtk-doc/ and not $spec =~ /^(gtkdocize|autogen)/);
+$spec =~ s/^(%build)/$1\ntouch ChangeLog/m
+	if $p->{ac_missing};
 $spec =~ s/^(%description)/BuildRequires: automake autoconf intltool libtool\n\n$1/m;
 
 my $name = $p->write_spec ($spec);

@@ -36,6 +36,7 @@ libqmi:
                 - freedesktop-git
 libmbim:
         owner: libmbim
+        ac_missing: yep
         merge:
                 - freedesktop-git
 ModemManager:

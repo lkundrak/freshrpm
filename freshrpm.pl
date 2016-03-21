@@ -83,7 +83,7 @@ my $lib = {
 	},
 	github_tarball => sub {
 		my $self = shift;
-		my $name = $self->{name}; 
+		my $name = $self->{name};
 		my $owner = $self->owner;
 		my ($commit) = $self->commit;
 		return "https://github.com/$owner/$name/archive/$commit/$name-$commit.tar.gz";
@@ -157,18 +157,18 @@ $spec =~ s/^(%setup.*)/$1 -n $package-$commit/m
 	or die 'Could not patch %setup arguments';
 $spec =~ s/^(%build)/$1\nintltoolize --force/m
 	if $p->{intltoolize} // ($spec =~ /intltool/ and not $spec =~ /^(intltoolize|autogen)/);
-$spec =~ s/^(%build)/$1\ngtkdocize/m
-	if $p->{gtkdocize} // ($spec =~ /gtk-doc/ and not $spec =~ /^(gtkdocize|autogen)/);
 $spec =~ s/^(%build)/$1\nautoreconf -i -f/m
 	if $p->{autoreconf} // ($spec =~ /%configure/ and not $spec =~ /^auto(gen|(re)?conf)/);
+$spec =~ s/^(%build)/$1\ngtkdocize/m
+	if $p->{gtkdocize} // ($spec =~ /gtk-doc/ and not $spec =~ /^(gtkdocize|autogen)/);
 $spec =~ s/^(%description)/BuildRequires: automake autoconf intltool libtool\n\n$1/m;
 
 my $name = $p->write_spec ($spec);
 my (undef, undef, undef, $mday, $mon, $year) = gmtime (time);
-my $release = sprintf "%s.%04d%02d%02dgit$short%{?dist}",
-	[split /\s*/, `rpm --define 'dist %{nil}' --qf '%{release}\n' -q --specfile $name`]->[0],
-	$year + 1900, $mon + 1, $mday;
-
+my $release = [split /\s+/, `rpm --define 'dist %{nil}' --qf '%{release}\n' -q --specfile $name`]->[0];
+$release =~ s/([\d\.]*\d).*/$1/;
+$release =~ s/(\d+)$/$1 + 1/e;
+$release .= sprintf ".%04d%02d%02dgit$short%%{?dist}", $year + 1900, $mon + 1, $mday;
 $spec =~ s/^(Release:\s*).*/$1$release/mi
 	or die 'Could not patch in the release number';
 

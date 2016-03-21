@@ -9,6 +9,7 @@ freedesktop-git:
         git_web: cgit_web
         git_commit: cgit_commit
         tarball: cgit_tarball
+        owner: ""
 
 github-git:
         git_web: github_web

@@ -20,7 +20,7 @@ sub merged
 	my $merges = delete $model->{$entry}{merge};
 	foreach my $m (@$merges) {
 		my $mergee = merged ($model, $m);
-		%{$model->{$entry}} = (%{$model->{$entry}}, %$mergee);
+		%{$model->{$entry}} = (%$mergee, %{$model->{$entry}});
 	}
 	return $model->{$entry};
 }
@@ -58,7 +58,9 @@ my $lib = {
 		my $self = shift;
 		my $name = $self->{name};
 		my $owner = $self->owner;
-		return "https://cgit.freedesktop.org/$owner/$name";
+
+		$owner .= '/' if $owner;
+		return "https://cgit.freedesktop.org/$owner$name";
 	},
 	cgit_tarball => sub {
 		my $self = shift;
@@ -76,7 +78,9 @@ my $lib = {
 		my $self = shift;
 		my $name = $self->{name};
 		my $owner = $self->owner;
-		return "https://github.com/$owner/$name/commits/master";
+
+		$owner .= '/' if $owner;
+		return "https://github.com/$owner$name/commits/master";
 	},
 	github_commit => sub {
 		qr{<a href="https://github.com/[^/"]*/[^/"]*/commits/(([^"]{7})[^"]*)"[^>]*>Permalink</a>};
@@ -104,7 +108,7 @@ sub AUTOLOAD
 sub owner
 {
 	my $self = shift;
-	$self->{owner} || $self->{name};
+	$self->{owner} // $self->{name};
 }
 
 sub spec

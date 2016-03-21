@@ -17,6 +17,7 @@ network-manager-pptp:
         merge:
                 - gnome-git
 NetworkManager:
+        owner: NetworkManager
         merge:
                 - freedesktop-git
 libndp:
@@ -30,3 +31,14 @@ libteam:
 libreswan:
         merge:
                 - github-git
+libqmi:
+        merge:
+                - freedesktop-git
+libmbim:
+        owner: libmbim
+        merge:
+                - freedesktop-git
+ModemManager:
+        owner: ModemManager
+        merge:
+                - freedesktop-git

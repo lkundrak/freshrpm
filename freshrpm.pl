@@ -30,14 +30,15 @@ sub merged
 sub new
 {
 	my $class = shift;
-	my $package = pop;
+	my $s = pop;
 
+	die "No package name" unless $s->{name};
 	my $y = { map { %{YAML::LoadFile ($_)} } @_ };
-	$y->{$package}{name} = $package;
-	$y->{$package}{merge} ||= [];
-	push @{$y->{$package}{merge}}, 'default';
+	$y->{$s->{name}} = {%{$y->{$s->{name}}}, %$s};
+	$y->{$s->{name}}{merge} ||= [];
+	push @{$y->{$s->{name}}{merge}}, 'default';
 
-	return bless merged ($y, $package), $class;
+	return bless merged ($y, $s->{name}), $class;
 }
 
 my $lib = {
@@ -141,14 +142,22 @@ sub write_spec
 
 package main;
 
-my $package = shift @ARGV;
-my $rpmargs = shift @ARGV;
-($rpmargs, $package) = ($package, $rpmargs) if $package and $package =~ /^-/;
-$rpmargs //= '-bs';
+my $rpmargs = "-bs";
+my $s = {};
+while ($_ = shift @ARGV) {
+	if (/^--([^=]*)(=(.*))?/) {
+		$s->{$1} = $3 // shift @ARGV;
+		die "$1 needs a value" unless defined $s->{$1};
+	} elsif (/^(-b.*)/) {
+		$rpmargs = $_;
+	} else {
+		die "Package already set: $s->{name}" if $s->{name};
+		$s->{name} = $_;
+	}
 
-$package or die 'no package specified';
+}
 
-my $p = new Package ('macros.yaml', 'packages.yaml', $package);
+my $p = new Package ('macros.yaml', 'packages.yaml', $s);
 
 my $spec = $p->spec;
 my $upstream = $p->upstream;

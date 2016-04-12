@@ -1,19 +1,24 @@
 network-manager-applet:
         merge:
                 - gnome-git
-network-manager-libreswan:
+NetworkManager-libreswan:
+        upstream: network-manager-libreswan
         merge:
                 - gnome-git
-network-manager-fortisslvpn:
+NetworkManager-fortisslvpn:
+        upstream: network-manager-fortisslvpn
         merge:
                 - gnome-git
-network-manager-vpnc:
+NetworkManager-vpnc:
+        upstream: network-manager-vpnc
         merge:
                 - gnome-git
-network-manager-openvpn:
+NetworkManager-openvpn:
+        upstream: network-manager-openvpn
         merge:
                 - gnome-git
-network-manager-pptp:
+NetworkManager-pptp:
+        upstream: network-manager-pptp
         merge:
                 - gnome-git
 NetworkManager:

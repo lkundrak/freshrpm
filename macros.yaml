@@ -16,14 +16,6 @@ github-git:
         git_commit: github_commit
         tarball: github_tarball
 
-fedora-rpm:
-        spec_url: fedora_spec
-
-fedora-rpm-nm:
-        merge:
-                - fedora-rpm
-        rpm_name: nm_vpn_rpm
-
 default:
-        merge:
-                - fedora-rpm-nm
+        path: ""
+        spec_url: fedora_spec

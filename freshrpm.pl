@@ -1,3 +1,5 @@
+#!/usr/bin/env perl
+
 # freshrpm -- a tool to build RPM packages off GIT snapshots,
 # reusing the release SPEC files
 
@@ -40,33 +42,26 @@ sub new
 
 my $lib = {
 	fedora_spec => sub {
-		my $name = shift->rpm_name;
+		my $name = shift->{name};
 		return "http://pkgs.fedoraproject.org/cgit/rpms/$name.git/plain/$name.spec";
 	},
-	nm_vpn_rpm => sub {
-		my $name = shift->{name};
-
-		return $name if $name eq 'network-manager-applet';
-		$name =~ s/^network-manager-/NetworkManager-/;
-		return $name;
-	},
 	gnome_cgit => sub {
-		my $name = shift->{name};
-		return "https://git.gnome.org/browse/$name";
+		my $upstream = shift->upstream;
+		return "https://git.gnome.org/browse/$upstream";
 	},
 	freedesktop_cgit => sub {
 		my $self = shift;
-		my $name = $self->{name};
+		my $upstream = $self->upstream;
 		my $owner = $self->owner;
 
 		$owner .= '/' if $owner;
-		return "https://cgit.freedesktop.org/$owner$name";
+		return "https://cgit.freedesktop.org/$owner$upstream";
 	},
 	cgit_tarball => sub {
 		my $self = shift;
-		my $name = $self->{name};
+		my $upstream = $self->upstream;
 		my ($commit) = $self->commit;
-		return $self->cgit_base."/snapshot/$name-$commit.tar.xz";
+		return $self->cgit_base."/snapshot/$upstream-$commit.tar.xz";
 	},
 	cgit_web => sub {
 		return shift->cgit_base."/commit/?id=master";
@@ -76,21 +71,21 @@ my $lib = {
 	},
 	github_web => sub {
 		my $self = shift;
-		my $name = $self->{name};
+		my $upstream = $self->upstream;
 		my $owner = $self->owner;
 
 		$owner .= '/' if $owner;
-		return "https://github.com/$owner$name/commits/master";
+		return "https://github.com/$owner$upstream/commits/master";
 	},
 	github_commit => sub {
 		qr{<a href="https://github.com/[^/"]*/[^/"]*/commits/(([^"]{7})[^"]*)"[^>]*>Permalink</a>};
 	},
 	github_tarball => sub {
 		my $self = shift;
-		my $name = $self->{name};
+		my $upstream = $self->upstream;
 		my $owner = $self->owner;
 		my ($commit) = $self->commit;
-		return "https://github.com/$owner/$name/archive/$commit/$name-$commit.tar.gz";
+		return "https://github.com/$owner/$upstream/archive/$commit/$upstream-$commit.tar.gz";
 	},
 
 };
@@ -109,6 +104,12 @@ sub owner
 {
 	my $self = shift;
 	$self->{owner} // $self->{name};
+}
+
+sub upstream
+{
+	my $self = shift;
+	$self->{upstream} // $self->{name};
 }
 
 sub spec
@@ -130,7 +131,7 @@ sub write_spec
 	my $self = shift;
 	my $spec = shift;
 
-	my $name = $self->rpm_name.'.spec';
+	my $name = $self->{name}.'.spec';
 	open (my $file, '>:utf8', $name) or die "$name: $!";
 	print $file $spec;
 
@@ -149,6 +150,7 @@ $package or die 'no package specified';
 my $p = new Package ('macros.yaml', 'packages.yaml', $package);
 
 my $spec = $p->spec;
+my $upstream = $p->upstream;
 my ($commit, $short) = $p->commit;
 my $source0 = $p->tarball or die "No source";
 
@@ -157,7 +159,7 @@ $spec =~ s/^(Source0*:\s+).*/$1$source0/mi
 $spec =~ s/^(Patch.*|%patch.*)/#$1/gm
 	if $p->{keeppatches} // 1;
 $spec =~ s/^(%setup.*\S)\s+-n.*/$1/m;
-$spec =~ s/^(%setup.*)/$1 -n $package-$commit/m
+$spec =~ s/^(%setup.*)/$1 -n $upstream-$commit$p->{path}/m
 	or die 'Could not patch %setup arguments';
 $spec =~ s/^(%build)/$1\nintltoolize --force/m
 	if $p->{intltoolize} // ($spec =~ /intltool/ and not $spec =~ /^(intltoolize|autogen)/);

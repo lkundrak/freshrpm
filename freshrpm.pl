@@ -64,7 +64,8 @@ my $lib = {
 		return $self->cgit_base."/snapshot/$upstream-$commit.tar.xz";
 	},
 	cgit_web => sub {
-		return shift->cgit_base."/commit/?id=master";
+		my $self = shift;
+		return $self->cgit_base."/commit/?id=$self->{branch}";
 	},
 	cgit_commit => sub {
 		 qr{<tr><th>commit</th><td colspan='2' class='sha1'><a href='[^']*id=(([^']{7})[^']*)'>};
@@ -75,7 +76,7 @@ my $lib = {
 		my $owner = $self->owner;
 
 		$owner .= '/' if $owner;
-		return "https://github.com/$owner$upstream/commits/master";
+		return "https://github.com/$owner$upstream/commits/$self->{branch}";
 	},
 	github_commit => sub {
 		qr{<a href="https://github.com/[^/"]*/[^/"]*/commits/(([^"]{7})[^"]*)"[^>]*>Permalink</a>};

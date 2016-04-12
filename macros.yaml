@@ -18,4 +18,5 @@ github-git:
 
 default:
         path: ""
+        branch: master
         spec_url: fedora_spec

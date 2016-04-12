@@ -48,3 +48,10 @@ ModemManager:
         owner: ModemManager
         merge:
                 - freedesktop-git
+
+NetworkManager-strongswan:
+        upstream: strongswan
+        owner: strongswan
+        path: /src/frontends/gnome
+        merge:
+                - github-git
